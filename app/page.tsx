@@ -1,101 +1,139 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [query, setQuery] = useState("");
+  const [reformulatedQueries, setReformulatedQueries] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!query.trim()) return;
+    
+    setIsLoading(true);
+    setError("");
+    
+    try {
+      const response = await fetch("/api/reformulate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query }),
+      });
+      
+      if (!response.ok) {
+        throw new Error("Failed to reformulate query");
+      }
+      
+      const data = await response.json();
+      setReformulatedQueries(data.reformulatedQueries);
+    } catch (err) {
+      console.error(err);
+      setError("An error occurred while reformulating your query. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col items-center p-4 sm:p-8">
+      <header className="w-full max-w-3xl flex flex-col items-center mb-8 mt-8">
+        <h1 className="text-3xl font-bold mb-2">Query Reformulator</h1>
+        <p className="text-center text-gray-600 dark:text-gray-400">
+          Transform your complex questions into effective search queries
+        </p>
+      </header>
+
+      <main className="w-full max-w-3xl flex flex-col gap-6">
+        <form onSubmit={handleSubmit} className="w-full">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="query" className="font-medium">
+              Enter your question or request:
+            </label>
+            <textarea
+              id="query"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="e.g., In what year was the winner of the 44th edition of the Miss World competition born?"
+              className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[120px] bg-white dark:bg-gray-800"
+              required
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          </div>
+          <button
+            type="submit"
+            disabled={isLoading || !query.trim()}
+            className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full sm:w-auto"
           >
-            Read our docs
-          </a>
+            {isLoading ? (
+              <span className="flex items-center justify-center">
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Reformulating...
+              </span>
+            ) : (
+              "Reformulate Query"
+            )}
+          </button>
+        </form>
+
+        {error && (
+          <div className="p-4 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 rounded-lg">
+            {error}
+          </div>
+        )}
+
+        {reformulatedQueries.length > 0 && (
+          <div className="bg-gray-50 dark:bg-gray-900/50 p-6 rounded-lg">
+            <h2 className="text-xl font-semibold mb-4">Reformulated Queries:</h2>
+            <ul className="space-y-3">
+              {reformulatedQueries.map((reformulatedQuery, index) => (
+                <li 
+                  key={index}
+                  className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow"
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 px-2 py-1 rounded text-sm">
+                      {index + 1}
+                    </span>
+                    <p>{reformulatedQuery}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <div className="bg-gray-50 dark:bg-gray-900/50 p-6 rounded-lg mt-4">
+          <h2 className="text-xl font-semibold mb-4">Examples:</h2>
+          <div className="space-y-4">
+            <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+              <p className="font-medium mb-2">Input:</p>
+              <p className="text-gray-700 dark:text-gray-300 mb-3">In what year was the winner of the 44th edition of the Miss World competition born?</p>
+              <p className="font-medium mb-2">Output:</p>
+              <p className="text-gray-700 dark:text-gray-300">44th Miss World competition winner birth year</p>
+            </div>
+            
+            <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+              <p className="font-medium mb-2">Input:</p>
+              <p className="text-gray-700 dark:text-gray-300 mb-3">Create a table for top noise cancelling headphones that are not expensive</p>
+              <p className="font-medium mb-2">Output:</p>
+              <ul className="text-gray-700 dark:text-gray-300 list-disc pl-5 space-y-1">
+                <li>top noise cancelling headphones under $100</li>
+                <li>top noise cancelling headphones $100 - $200</li>
+                <li>best budget noise cancelling headphones</li>
+                <li>noise cancelling headphones reviews</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }

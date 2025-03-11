@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Query Reformulator
+
+A Next.js application that uses Groq's AI to transform complex questions and requests into effective search engine queries.
+
+## Features
+
+- Transform complex questions into concise search queries
+- Fast response times (optimized for low latency)
+- Simple and intuitive user interface
+- Dark mode support
+- Responsive design for all devices
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18.x or later
+- npm or yarn
+- A Groq API key (get one at [console.groq.com](https://console.groq.com))
+
+### Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/query-reformulator.git
+cd query-reformulator
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+# or
+yarn install
+```
+
+3. Create a `.env.local` file in the root directory and add your Groq API key:
+
+```
+GROQ_API_KEY=your_groq_api_key_here
+```
+
+4. Run the development server:
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Usage
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Enter your complex question or request in the input field
+2. Click the "Reformulate Query" button
+3. View the reformulated search queries that can be used to find the information you need
 
-## Learn More
+## Examples
 
-To learn more about Next.js, take a look at the following resources:
+### Example 1:
+**Input:** In what year was the winner of the 44th edition of the Miss World competition born?
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Output:** 44th Miss World competition winner birth year
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Example 2:
+**Input:** Who lived longer, Nikola Tesla or Milutin Milankovic?
 
-## Deploy on Vercel
+**Outputs:**
+- Nikola Tesla lifespan
+- Milutin Milankovic lifespan
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Example 3:
+**Input:** Create a table for top noise cancelling headphones that are not expensive
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Outputs:**
+- top noise cancelling headphones under $100
+- top noise cancelling headphones $100 - $200
+- best budget noise cancelling headphones
+- noise cancelling headphones reviews
+
+## Technology Stack
+
+- [Next.js](https://nextjs.org/) - React framework
+- [Groq API](https://console.groq.com/) - AI language model
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
