@@ -55,10 +55,18 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <main className="flex-1 py-8 px-4 sm:px-6 max-w-4xl mx-auto w-full">
-        <div className="flex items-center justify-center gap-2 mb-8">
-          <span className="font-bold text-2xl">Query Reformulator</span>
-          <span className="text-xl">|</span>
-          <span className="text-xl">Transform your questions</span>
+        <div className="flex flex-col items-center mb-8">
+          <div className="flex items-center">
+            <Image 
+              src="/images/brand-icon.png" 
+              alt="Query Reformulator Logo" 
+              width={24} 
+              height={24} 
+              className="mr-2"
+            />
+            <span className="font-bold text-2xl">Query Reformulator</span>
+          </div>
+          <p className="text-gray-600 mt-1">Transform your questions to effective search engine queries</p>
         </div>
 
         <div className="mb-8">
